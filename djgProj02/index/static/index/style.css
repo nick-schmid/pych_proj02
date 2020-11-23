@@ -1,0 +1,64 @@
+table, th, td {
+   border: 1px solid black;
+}
+
+table {
+   border-collapse: collapse;
+}
+
+th, td {
+    padding: 15px;
+	text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+tr:hover {
+    background-color: lightgray;
+}
+
+.rSelected {
+	background-color: blue;
+	color: white;
+}
+
+
+
+th {
+    background-color: gray;
+    color: yellow;
+}
+
+/* remove default list style */
+.navList {
+	list-style: none;
+}
+
+#mainNav {
+	margin: 10px;
+	width: 1900px;
+	font-family: sans-serif;
+}
+
+#mainNav li {
+	display:block;
+	width:120px;
+	float:left;
+	margin-left:2px;
+	border:1px solid #000;
+}
+
+#mainNav a {
+	display:block;
+	padding:3px;
+	text-decoration:none;
+	background-color:#fff;
+	color:#009;
+}
+
+#mainNav a:hover {
+	background-color:#009;
+	color:#fff;
+}

@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" contents="width-device.width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'index/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'index/styleModal.css' %}">
+
+    <title>Welcome</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Django Tips!</h1>
+    </header>
+
+<p><em>via <strong>welcome.html</strong> (routed to 'welcome')</em></p>
+<ul>
+    <li><strong>To start the django server:</strong> python manage.py runserver</li>
+    <li><b>To create a django app:</b> python manage.py startapp <em>appname</em></li>
+</ul>
+
+<h2> this is the current time</h2>
+<p id="timepar">
+getting the current time...
+</p>
+<p id="onetime">
+    does this load each time?
+</p>
+
+<p id="manytimes">
+    this does load each time...</p>
+
+
+<p id="raftest">
+    this is a raf test
+</p>
+
+
+    <nav>
+        <ul class="navList" id="mainNav">
+            <li><a href="#" onclick="">IC List</a></li>
+            <li><a href="#" onclick="">Malf List</a></li>
+        </ul>
+        <!--input name="tabbed" type="radio" id="t1" checked>
+            <section>
+                <h2>
+                    <label for="tab1">IC List</label>
+                </h2>
+            </section>
+            <input name="tabbed" type="radio" id="t2">
+            <section>
+                <h2>
+                    <label for="tab1">Malf List</label>
+                </h2>
+            </section-->
+    </nav>
+<!-- because mainNav uses float:left, need to clear the float b/c we don't have six images-->
+<br clear:both/>
+<div>
+    <h3>table test</h3>
+</div>
+<div>
+    <button>Save</button>
+    <button>Delete</button>
+</div>
+
+
+
+<!-- wrapping table in a div with overflow-x:auto adds a scroll
+     bar if the table is too wide-->
+<div style="overflow-x:auto;">
+    <table id="icList">
+        <caption>List populated by JSON data from API call</caption>
+        <tbody>
+        <!--tr>
+            <th scope="col" id="icNumCol">Num</th>
+            <th scope="col" id="icDescCol">Description</th>
+            <th scope="col" id="icTimeCol">TimeStamp</th>
+            <th scope="col" id="icProtCol">Protectecd (T/F)</th>
+        </tr-->
+
+
+        </tbody>
+    </table>
+</div>
+
+    <div>
+    <!-- https://www.w3schools.com/howto/howto_css_login_form.asp -->
+        <h3>A modal html5 table dialog</h3>
+        <!-- Button to open the modal login form -->
+        <button id=btnIcModal>Show IC Table</button>
+    </div>
+
+
+
+
+
+<!-- The Modal -->
+<div id="tableModal01" class="modalIC">
+
+
+
+  <!-- Modal Content -->
+    <div class="modalIC-content"> <!-- animate" action="/action_page.php"-->
+
+          <span class="close" title="Close Modal">&times;</span>
+          <h3>Table of Snapshots</h3>
+          <table id="icListModal">
+              <tbody>
+
+              </tbody>
+          </table>
+
+
+    <div class="container" style="background-color:#f1f1f1">
+        <button id="icLoadBtn" type="button">Load</button>
+        <button id="icModalCancelBtn" type="button" class="cancelbtn">Cancel</button>
+    </div>
+    </div>
+</div>
+
+<script src="{% static 'index/welcomeTime.js' %}" defer type="module"></script>
+<script src="{% static 'index/ictable.js' %}" defer type="module"></script>
+    <!-- <script defer>
+    // the axios call will return a Promise object
+
+    function getTimeFromApi()
+    {
+        const promiseDT = axios.get('http://worldtimeapi.org/api/ip')
+            .catch(error => console.log('BAD', error))
+            .then(response => {
+                //console.log(response.data["datetime"]);
+                 return response.data["datetime"];
+            });
+
+        promiseDT.then((value) => {
+            //console.log(value);
+            document.getElementById("timepar").innerHTML =  "TIME from WorldTimeAPI is: " + value;
+            });
+    }
+    </script> -->
+
+
+<!--    function getTimeToDisplay() {-->
+<!--       let date = new Date();-->
+<!--       let time = date.toLocaleTimeString();-->
+<!--       return time;-->
+<!--       //document.getElementById('onetime').textContent = time;-->
+<!--    }-->
+
+<!--    function displayTime(elementID)-->
+<!--    {-->
+<!--       document.getElementById(elementID).textContent = elementID + ': ' + getTimeToDisplay();-->
+<!--    }-->
+
+<!--    function displayManyTimes()-->
+<!--    {-->
+<!--       displayTime('manytimes');-->
+<!--    }-->
+
+<!--// this will only load once - immediately - can use to intialize other times-->
+<!--    document.getElementById('onetime').textContent = 'onetime: ' + getTimeToDisplay();-->
+
+<!--    // The line below initializes 'manytimes' on page load.  If commented out-->
+<!--    // 'manytimes' will be the text in the html file (if any) until the first interval executes-->
+<!--    displayTime('manytimes');-->
+
+<!--     // setInterval allows the function to get called every x milliseconds-->
+<!--     const clocker = setInterval(getTimeFromApi,2000);-->
+
+<!--// why doesn't this work?-->
+<!--     //const clocker2 = setInterval(displayTime('manytimes'),1000);-->
+<!--     const clocker3 = setInterval(displayManyTimes,1000);-->
+
+<!--// https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals-->
+<!--     // now look into requestAnimationFrame(timestamp) and how that might be better or worse-->
+
+<!--    let starttime = null;-->
+<!--    let raf_loc;-->
+<!--    function raf(timestamp)-->
+<!--    {-->
+<!--       if(!starttime)-->
+<!--       {-->
+<!--          starttime = timestamp;-->
+<!--       }-->
+
+<!--       const currenttime = timestamp - starttime;-->
+
+<!--       //document.getElementById('raftest').textContent = currenttime;-->
+
+<!--       displayTime('raftest');-->
+
+<!--       raf_loc = requestAnimationFrame(raf);-->
+<!--    }-->
+
+<!--    raf();-->
+
+<!--    </script>-->
+
+</body>
+</html>
