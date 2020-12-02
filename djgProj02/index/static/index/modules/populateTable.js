@@ -91,15 +91,41 @@ function populateTableMod(value,tableID)
                 let rowCount = t.rows.length;
                 for(let i=0; i<rowCount; i++)
                 {
-                    console.log(t.rows[i].innerHTML);
-                    t.rows[i].onclick = (function() {
-                        this.addClass('rSelected');
-                    })
-                    //t.rows[i].addEventListener("click", function() {
-                     //   this.addClass = 'rSelected';
-                    //});
+                    t.rows[i].addEventListener("click", selectRow, false);
                 }
             }
+}
+
+// event is the click event to select the row
+// t is the table
+function selectRow(event)
+{
+   // first clear any selected rows
+   // can make the more efficient by storing the selected row so we don't need to loop through each one
+
+
+                        let row = event.target.closest('tr');
+                        let tt = event.target.closest('table');
+
+                        if (!row || !tt)
+                        {
+                           return;
+                        }
+                        else
+                        {
+                            // remove any selection listeners
+                            let rowCount = tt.rows.length;
+                            for(let i=0; i<rowCount; i++)
+                            {
+                                tt.rows[i].className = '';
+                            }
+
+                           // TODO: addClass is not a method on row
+                           row.className = 'rSelected';
+                           //row.addClass('rSelected');
+                        }
+
+                        console.log(event.target.innerHTML);
 }
 
 function clearTable(tableID)

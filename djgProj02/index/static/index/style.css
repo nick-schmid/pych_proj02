@@ -11,24 +11,26 @@ th, td {
 	text-align: left;
 }
 
+/*
 tr:nth-child(even) {
     background-color: #f3f3f3;
 }
+*/
 
-tr:hover {
+tr:hover:not(.rSelected) {
     background-color: lightgray;
 }
 
 .rSelected {
 	background-color: blue;
-	color: white;
+	color: yellow;
 }
 
 
 
 th {
     background-color: gray;
-    color: yellow;
+    color: black;
 }
 
 /* remove default list style */
