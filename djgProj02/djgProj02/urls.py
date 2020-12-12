@@ -19,7 +19,7 @@ from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 
-from index.views import welcome
+from index.views import welcome, flowsheet
 
 """
 start of rest frame work stuff
@@ -47,6 +47,7 @@ end of rest frame work stuff
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('welcome', welcome, name='welcome'),
+    path('flowsheet', flowsheet, name='flowsheet'),
     path('login_user/', include('login_user.urls')),
     path('api01/', include('api01.urls')),
     url(r'^', include(router.urls)),
