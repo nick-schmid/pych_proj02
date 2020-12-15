@@ -70,9 +70,63 @@ function drawObj(x,y,h,w,name,dynclass)
     }
 
     console.log(rect);
-    //var path = new Path(rect,txt);
-    return rect;
+
 }
+
+// for Transmitter and PID
+function drawCircle(x,y,h,w,name,dynclass)
+{
+// original Java code ties everything top left, paperscript positions circles at center
+    var topLeft = new Point(x+w/2,y+h/2);
+    //console.log(topLeft);
+    var radius = (w + h)/4; // for circles, w and h should always be the same
+    //console.log(radius);
+
+
+    var circle = new Path.Circle(topLeft, radius);
+    if(dynclass != undefined)
+    {
+        if(dynclass.endsWith('PID'))
+        {
+           circle.fillColor = 'orange';
+        }
+        else if(dynclass.endsWith('TRANSMITTER'))
+        {
+            circle.fillColor = 'purple';
+        }
+        else
+        {
+           circle.fillColor = 'cornflowerblue';
+        }
+         // TODO: when parsing JSON, store the DYNSIM type/class in the generic data object
+         circle.data.class = dynclass;
+    }
+    else
+    {
+       circle.fillColor = 'red';
+    }
+
+
+// for transmitters and controllers, default label position is above
+    if(name != undefined && name != '') // should always be defined
+    {
+       circle.name = name;
+       var txt = new PointText(new Point(x,y));
+       txt.justification = 'center';
+       txt.fillColor = 'black';
+       txt.content = name;
+       // TODO: this is valid because the position is the center of the circle
+       // could use bounds property go calc actual width and height of text
+
+       txt.position = new Point(x+w/2,y-h/2); // add font size as well
+       txt.name = '.txt.' + name;
+       // TODO: can group the label and the object
+    }
+
+    console.log(circle);
+
+}
+
 
 function drawValve(x,y,h,w,name)
 {
@@ -109,6 +163,11 @@ function drawValve(x,y,h,w,name)
         txt.position = new Point(xmid,y+h+15);
         txt.name = '.txt.' + name;
         // TODO: can group the label and the object
+
+        // using a group is not necessarily the best way to go here.
+        // Probably best to draw an invisible rectangle that will
+        // respond to the hit test and move the items inside it
+        valve.addChild(txt);
      }
 }
 
@@ -149,6 +208,7 @@ function onMouseDown(event) {
 
 	if (hitResult) {
 		path = hitResult.item;
+		console.log(hitResult.type);
 		if (hitResult.type == 'segment') {
 			segment = hitResult.segment;
 		} else if (hitResult.type == 'stroke') {
@@ -4193,8 +4253,300 @@ var g2Gmb = {
 
 processFlowsheet();
 
+// USE GMBJSONHandler
+//private static GMBElement getElementFromJSON(JSONObject jObj)
+function getElementFromJSON(jObj)
+{
+    var obj = new Object();
+    obj.index = parseInt(jObj['index']);
+    obj.index = jObj['name'];
+    obj.className = jObj['class'];
+    obj.category = jObj['cat'];
+    obj.x = parseInt(jObj['x']);
+    obj.y = parseInt(jObj['y']);
+    obj.width = parseInt(jObj['width']);
+    obj.height = parseInt(jObj['height']);
+
+
+    //Parse GMBParams
+    obj.params = jObj['params'];
+//    Iterator<String> it = params.keySet().iterator();
+//    List<GMBBooleanParam> bools = new ArrayList<GMBBooleanParam>();
+//    List<GMBLongParam> longs = new ArrayList<GMBLongParam>();
+//    List<GMBFloatParam> floats = new ArrayList<GMBFloatParam>();
+//    List<GMBStringParam> strings = new ArrayList<GMBStringParam>();
+//    List<GMBColorParam> colors = new ArrayList<GMBColorParam>();
+//    while(it.hasNext())
+//    {
+//      String key = it.next();
+//      Object value = params.get(key);
+//      if(value instanceof Boolean)
+//      {
+//         bools.add(new GMBBooleanParam(key, (boolean) value));
+//      }
+//      else if(value instanceof Long)
+//      {
+//        Long lVal = (Long) value;
+//        longs.add(new GMBLongParam(key, lVal.intValue()));
+//      }
+//      else if(value instanceof Double)
+//      {
+//        Double dVal = (Double) value;
+//        floats.add(new GMBFloatParam(key, dVal.floatValue()));
+//      }
+//      else if(value instanceof String)
+//      {
+//        strings.add(new GMBStringParam(key, (String) value));
+//      }
+//      else if (value instanceof JSONArray) // color param
+//      {
+//        GMBColorParam p = new GMBColorParam();
+//        JSONArray colorArr = (JSONArray) value;
+//        p.name =  key;
+//        p.r = ((Long) colorArr.get(0)).intValue();
+//        p.g = ((Long) colorArr.get(1)).intValue();
+//        p.b = ((Long) colorArr.get(2)).intValue();
+//        colors.add(p);
+//      }
+//    }
+//    obj.booleanParams = bools.toArray(new GMBBooleanParam[bools.size()]);
+//    obj.longParams = longs.toArray(new GMBLongParam[longs.size()]);
+//    obj.floatParams = floats.toArray(new GMBFloatParam[floats.size()]);
+//    obj.colorParams = colors.toArray(new GMBColorParam[colors.size()]);
+//    obj.stringParams = strings.toArray(new GMBStringParam[strings.size()]);
+
+    //Parse GMBPports
+    obj.ports = jObj['ports'];
+//    JSONArray ports = (JSONArray) jObj.get("ports");
+//    List<GMBPortStruct> portList = new ArrayList<GMBPortStruct>();
+//    int portSz = ports.size();
+//    int k;
+//    for( k = 0; k < portSz; k++)
+//    {
+//      JSONObject port = (JSONObject) ports.get(k);
+//      GMBPortStruct p =  new GMBPortStruct();
+//      p.name = (String) port.get("name");
+//      p.x = ((Long) port.get("x")).intValue();
+//      p.y = ((Long) port.get("y")).intValue();
+//      p.xPort = ((Long) port.get("xPort")).intValue();
+//      p.yPort = ((Long) port.get("yPort")).intValue();
+//      p.orientation = ((Long) port.get("orientation")).intValue();
+//      p.lineThickness = ((Long) port.get("lineThickness")).intValue();
+//      p.connectFlag = ((Long) port.get("conFlag")).intValue();
+//      p.connectorName = (String) port.get("connector");
+//      p.showName = ((Long) port.get("showName")) != 0L;
+//      portList.add(p);
+//
+//    }
+//    obj.ports = portList.toArray(new GMBPortStruct[portList.size()]);
+
+    //Parse GMBPVertices
+    var vertCoord = jObj['vertices'];
+//    JSONArray vertices = (JSONArray) jObj.get("vertices");
+//    List<GMBVertex> vertList = new ArrayList<GMBVertex>();
+    var vSize = jObj['vertices'].length;
+    var idx = 0;
+    obj.vertices = new Array();
+    for( k = 0; k < vSize; k += 2)
+    {
+      console.log('k ' + vertCoord[k] + '; k+1 ' + vertCoord[k+1]);
+      var v = new Point(parseInt(vertCoord[k]),parseInt(vertCoord[k+1]));
+      obj.vertices.push(v);
+    }
+//    obj.vertices = vertList.toArray(new GMBVertex[vertList.size()]);
+
+    return obj;
+}
+
+
+
+//
+// Generate the drawing for the image.  Code adapted from GMBConnector in DYNSIM
+// data is the element from the GMB file
+function drawConnector(data, xin, yin)
+{
+   console.log('xIn ' + xin +'; yIn ' + yin + '; vertices ' + data.vertices.length);
+   var lineThickness = 2; // test different widths
+   // shift by line thickness / 2 so that the line
+   // does not get cropped
+   var xc = xin + lineThickness/2;
+   var yc = yin + lineThickness/2;
+   console.log('xc ' + xc +'; yc ' + yc);
+
+   // if the line color and draw if defined
+   //if ((lineColor != null) && (lineStyle != NO_LINE))
+   //{
+      // first draw a white line behind the colored line
+      // set the line color
+      //g2D.setColor(GMBCanvas.getDefaultFlowsheetColor() );
+
+
+      // set the stroke
+      //g2D.setStroke( backgroundStroke );
+      // draw the lines
+      console.log(data.vertices.length);
+      var path = new Path();
+
+      for (var i=0; i<data.vertices.length-1; i++)
+      {
+      // vertices have already been converted to PaperJs Points
+         var p1 = data.vertices[i];
+         var p2 = data.vertices[i+1];
+         console.log('p1 ' + p1.x + ' ' + p1.y);
+         console.log('p2 ' + p2.x + ' ' + p2.y);
+
+
+         var x1 = 0;
+         var y1 = 0;
+         var x2 = 0;
+         var y2 = 0;
+         // for the first segment, make the background shorter
+         // so that it does not hide the port connection
+         if (i == 0)
+         {
+            // the segment is vertical
+            if (p1.x == p2.x)
+            {
+               x1 = xc+p1.x;
+               x2 = xc+p2.x;
+               // goes down
+               if (p1.y < p2.y)
+               {
+                  y2 = yc+p2.y;
+                  y1 = Math.min(y2, yc + p1.y + (2*lineThickness+1));
+               }
+               // goes up
+               else
+               {
+                  y2 = yc+p2.y;
+                  y1 = Math.max(y2, yc + p1.y - (2*lineThickness+1));
+               }
+            }
+            // else the segment is horizontal
+            else
+            {
+               y1 = yc + p1.y;
+               y2 = yc + p2.y;
+               // goes to right
+               if (p1.x < p2.x)
+               {
+                  x2 = xc + p2.x;
+                  x1 = Math.min(x2, xc + p1.x + (2*lineThickness+1));
+               }
+               // goes to left
+               else
+               {
+                  x2 = xc + p2.x;
+                  x1 = Math.max(x2, xc + p1.x - (2*lineThickness+1));
+               }
+            }
+         }
+
+         // for the last segment, make the background shorter
+         // so that it does not hide the port connection
+         else if (i == data.vertices.length-2)
+         {
+            // the segment is vertical
+            if (p1.x == p2.x)
+            {
+               x1 = xc+p1.x;
+               x2 = xc+p2.x;
+               // goes down
+               if (p1.y < p2.y)
+               {
+                  y1 = yc+p1.y;
+                  y2 = Math.max(y1, yc+p2.y-(2*lineThickness+1));
+               }
+               // goes up
+               else
+               {
+                  y1 = yc+p1.y;
+                  y2 = Math.min(y1, yc+p2.y+(2*lineThickness+1));
+               }
+            }
+            // else the segment is horizontal
+            else
+            {
+               y1 = yc+p1.y;
+               y2 = yc+p2.y;
+               // goes to right
+               if (p1.x < p2.x)
+               {
+                  x1 = xc+p1.x;
+                  x2 = Math.max(x1, xc+p2.x-(2*lineThickness+1));
+               }
+               // goes to left
+               else
+               {
+                  x1 = xc+p1.x;
+                  x2 = Math.min(x1, xc+p2.x+(2*lineThickness+1));
+               }
+            }
+         }
+
+         // else this is a normal segment
+         else
+         {
+            x1 = xc+p1.x;
+            y1 = yc+p1.y;
+            x2 = xc+p2.x;
+            y2 = yc+p2.y;
+         }
+
+
+         console.log('x1 '+x1+'; y1 '+y1+'; x2 '+x2+'; y2 '+y2);
+         path.add(new Point(x1,y1));
+         path.add(new Point(x2,y2));
+
+//         // create the line shape
+//         Line2D line = new Line2D.Float(x1, y1,
+//                                        x2, y2);
+//         // draw the line
+//         g2D.draw( line );
+      }
+
+      path.strokeWidth = 2;
+	  path.strokeColor = 'blue';
+
+      // set the line color
+      //g2D.setColor( lineColor );
+      // set the stroke
+      //g2D.setStroke( stroke );
+
+      // draw the lines - how is this different than what is done above?
+      // seems to draw over the same lines in most cases
+      var connectorItem = new Group();
+      for (var i=0; i<data.vertices.length-1; i++)
+      {
+
+         var p1 = data.vertices[i];
+         var p2 = data.vertices[i+1];
+
+         var p1c = new Point(xc+p1.x, yc+p1.y);
+         var p2c = new Point(xc+p2.x, yc+p2.y);
+
+
+		 connectorItem.addChild(new Path([p1c, p2c]));
+
+         // create the line shape
+//         Line2D line = new Line2D.Float(
+//                       xc+(float)p1.x, yc+(float)p1.y,
+//                       xc+(float)p2.x, yc+(float)p2.y);
+
+         // draw the line
+         //g2D.draw( line );
+      }
+      connectorItem.strokeWidth = 1;
+	  connectorItem.strokeColor = 'red';
+   //}
+} //draw
+
+
 function processFlowsheet()
 {
+
+
+    console.log(obj);
     // This will use the g2Gmb example for testing.
     // A more realistic example would fetch the data
     // via an api call.
@@ -4204,17 +4556,17 @@ function processFlowsheet()
     {
        console.log('g2Gmb is not undefined');
 
-
-       for (var elem in g2Gmb)
-       {
-          console.log(elem);
-       }
+//       for (var elem in g2Gmb)
+//       {
+//          console.log(elem);
+//       }
 
        if(g2Gmb.elements != undefined)
        {
           for(var i=0; i<g2Gmb.elements.length; i++)
           {
              var gmb = g2Gmb.elements[i];
+
              if(gmb != undefined && gmb.cat != undefined)
              {
                  if(gmb.cat == 'MODEL OBJECT')
@@ -4224,6 +4576,11 @@ function processFlowsheet()
                         if(gmb.class.endsWith('VALVE'))
                         {
                            drawValve(gmb.x, gmb.y, gmb.height, gmb.width, gmb.name, gmb.class);
+                        }
+                        else if(gmb.class.endsWith('TRANSMITTER') || gmb.class.endsWith('PID'))
+                        {
+                           drawCircle(gmb.x, gmb.y, gmb.height, gmb.width, gmb.name, gmb.class);
+                           //drawObj(gmb.x, gmb.y, gmb.height, gmb.width, gmb.name, gmb.class);
                         }
                         else
                         {
@@ -4256,7 +4613,7 @@ function processFlowsheet()
 
                        var p1 = new Point(x1,y1);
                        var p2 = new Point(x2,y2);
-                       console.log(p1 + ' : ' + p2);
+                       //console.log(p1 + ' : ' + p2);
                        //var vectorItem = new Path();
                        //vectorItem.add(p1);
                        //vectorItem.add(p2);
@@ -4278,12 +4635,15 @@ function processFlowsheet()
                        console.log(gmb['params']);
                     }
                  }
+                 else if(gmb.cat == 'CONNECTOR')
+                 {
+                     var obj = getElementFromJSON(gmb);
+                     // call the dynsim draw method
+	                 //drawConnector(obj, gmb.x, gmb.y);
+                 }
              }
-
           }
        }
-
-
      }
     else
     {
